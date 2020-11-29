@@ -104,18 +104,32 @@ class Math {
      *  the Jack expressions x/y and divide(x,y) return the same value.
      */
     function int divide(int x, int y) {
-        var int q;
+        var int q, con;
+
+        let con = ((x < 0) & (y > 0)) | ((x > 0) & (y < 0));
+
+        let x = Math.abs(x);
+        let y = Math.abs(y);
+
         if (y > x) {
             return 0;
         }
 
         let q = Math.divide(x, 2 * y);
 
-        if ((x - 2 * q * y) < y) {
-            return 2 * q;
+        if ((x - (2 * q * y)) < y) {
+            if (con) {
+                return -(2 * q);
+            } else {
+                return 2 * q;
+            }
         }
         else {
-            return (2 * q) + 1;
+            if (con) {
+                return -((2 * q) + 1);
+            } else {
+                return (2 * q) + 1;
+            }
         }
     }
 
@@ -124,7 +138,7 @@ class Math {
         var int y, j, a;
 
         let y = 0;
-        let j = 15;
+        let j = 7;
 
         while (~(j < 0)) {
             let a = y + twoToThe[j];
@@ -132,6 +146,8 @@ class Math {
             if (~(a > x) & (a > 0)) {
                 let y = y + twoToThe[j];
             }
+
+            let j = j -1;
         }
 
         return y;
