@@ -30,16 +30,18 @@ class Math {
         let twoToThe[12] = 4096;
         let twoToThe[13] = 8192;
         let twoToThe[14] = 16384;
-        let twoToThe[15] = 32768;
+        let twoToThe[15] = 32767;
+        return;
     }
 
     /** Returns the absolute value of x. */
     function int abs(int x) {
         if (x < 0) {
             return -x;
+        } else {
+            return x;
         }
         
-        return x;
     }
 
     // Returns true if the i-th bit of x is 1, false otherwise
@@ -51,13 +53,13 @@ class Math {
 
         while (j > i) {
             let a = twoToThe[j];
-            if (y > a) {
+            if (~(y < a)) {
                 let y = y - a;
             }
             let j = j - 1;
         }
 
-        if (y > twoToThe[i]) {
+        if (~(y < twoToThe[i])) {
             return true;
         }
 
@@ -70,21 +72,30 @@ class Math {
      *  the Jack expressions x*y and multiply(x,y) return the same value.
      */
     function int multiply(int x, int y) {
-        var int sum, shiftedX, i;
+        var int sum, shiftedX, i, con;
+
+        let con = ((x < 0) & (y > 0)) | ((x > 0) & (y < 0));
+
+        let x = Math.abs(x);
+        let y = Math.abs(y);
 
         let sum = 0;
         let shiftedX = x;
 
         let i = 0;
         while (i < 16) {
-            if (bit(y, i)) {
+            if (Math.bit(y, i)) {
                 let sum = sum + shiftedX;
             }
-            let shiftedX = shiftedX * 2;
+            let shiftedX = shiftedX + shiftedX;
             let i = i + 1;
         }
 
-        return sum;
+        if (con) {
+            return -sum;
+        } else {
+            return sum;
+        }
     }
 
     /** Returns the integer part of x/y.
@@ -98,7 +109,7 @@ class Math {
             return 0;
         }
 
-        let q = divide(x, 2 * y);
+        let q = Math.divide(x, 2 * y);
 
         if ((x - 2 * q * y) < y) {
             return 2 * q;
