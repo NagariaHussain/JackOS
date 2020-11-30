@@ -17,16 +17,27 @@
 class Output {
 
     // Character map for displaying characters
+    static int stat0, stat1;
+    static bool stat2;
+    static String stat3;
+    static int stat4;
     static Array charMaps; 
+    static Array stat6;
 
     /** Initializes the screen, and locates the cursor at the screen's top-left. */
     function void init() {
+        let stat4 = 16384;
+        let stat2 = true;
+        let stat1 = 32;
+        let stat0 = 0;
+        let stat3 = String.new(6);
+        do Output.initMap();
+        do Output.createShiftedMap();
+        return;
     }
 
     // Initializes the character map array
     function void initMap() {
-        var int i;
-    
         let charMaps = Array.new(127);
         
         // Black square, used for displaying non-printable characters.
@@ -71,7 +82,7 @@ class Output {
         do Output.create(64,30,51,51,59,59,59,27,3,30,0,0);  // @
         do Output.create(63,30,51,51,24,12,12,0,12,12,0,0);  // ?
 
-        do Output.create(65,0,0,0,0,0,0,0,0,0,0,0);          // A ** TO BE FILLED **
+        do Output.create(65,12,30,51,51,63,51,51,51,51,0,0);          // A ** TO BE FILLED **
         do Output.create(66,31,51,51,51,31,51,51,51,31,0,0); // B
         do Output.create(67,28,54,35,3,3,3,35,54,28,0,0);    // C
         do Output.create(68,15,27,51,51,51,51,51,27,15,0,0); // D
@@ -137,15 +148,15 @@ class Output {
         do Output.create(125,7,12,12,12,56,12,12,12,7,0,0);    // }
         do Output.create(126,38,45,25,0,0,0,0,0,0,0,0);        // ~
 
-	return;
+	    return;
     }
 
     // Creates the character map array of the given character index, using the given values.
     function void create(int index, int a, int b, int c, int d, int e,
                          int f, int g, int h, int i, int j, int k) {
-	var Array map;
+	    var Array map;
 
-	let map = Array.new(11);
+	    let map = Array.new(11);
         let charMaps[index] = map;
 
         let map[0] = a;
@@ -163,41 +174,163 @@ class Output {
         return;
     }
     
+    function void createShiftedMap() {
+        var int l0, l1, l2, l3;
+
+        let stat6 = Array.new(127);
+        let l2 = 0;
+
+        while (l2 < 127) {
+            let l0 = charMaps[l2];
+            let l1 = Array.new(11);
+            let stat6[l2] = l1;
+            let l3 = 0;
+
+            while (l3 < 11) {
+                let l3[l1] = (256 * l3[l0]);
+                let l3 = l3 + 1;
+            }
+
+            if (l2 = 0) {
+                let l2 = 32;
+            } else {
+                let l2 = l2 + 1;
+            }
+        }
+        return;
+    }
     // Returns the character map (array of size 11) of the given character.
     // If the given character is invalid or non-printable, returns the
     // character map of a black square.
-    function Array getMap(char c) {
-        if ((c < 32) | (c > 126)) {
-            let c = 0;
+    function Array getMap(char arg0) {
+        var int l0;
+        if ((arg0 < 32) | (arg0 > 126)) {
+            let arg0 = 0;
         }
-        return charMaps[c];
+
+        if (stat2) {
+            let l0 = charMaps[arg0];
+        } else {
+            let l0 = stat6[arg0];
+        }
+        return l0;
+    }
+
+    function void drawChar(char arg0) {
+        var int l0, l1, l2, l3;
+
+        let l2 = Output.getMap(arg0);
+        let l0 = stat1;
+
+        while (l1 < 11) {
+            if (stat2) {
+                let l3 = stat4[l0] & (-256);
+            } else {
+                let l3 = stat4[l0] & 255;
+            }
+
+            let stat4[l0] = (l1[l2] | l3);
+            let l0 = l0 + 32;
+            let l1 = l1 + 1;
+        }
+        return;
     }
 
     /** Moves the cursor to the j-th column of the i-th row,
      *  and erases the character displayed there. */
-    function void moveCursor(int i, int j) {
+    function void moveCursor(int arg0, int arg1) {
+        if ((arg0 < 0) | (arg0 > 22) | (arg1 < 0) | (arg1 > 63)) {
+            do Sys.error(20);
+        } 
+            let stat0 = arg1 / 2;
+            let stat1 = 32 + (arg0 * 352) + stat0;
+            let stat2 = (arg1 = (stat0 * 2));
+            do Output.drawChar(32);
+        
+        return;
     }
 
     /** Displays the given character at the cursor location,
      *  and advances the cursor one column forward. */
-    function void printChar(char c) {
+    function void printChar(char arg0) {
+        if (arg0 = String.newLine()) {
+            do Output.println();
+        } else {
+            if (arg0 = String.backSpace()) {
+                do Output.backSpace();
+            } else {
+                do Output.drawChar(arg0);
+
+                if (~stat2) {
+                    let stat0 = stat0 + 1;
+                    let stat1 = stat1 + 1;
+                } 
+                    if (stat0 = 32) {
+                        do Output.println();
+                    } else {
+                        let stat2 = ~stat2;
+                    }
+                
+            }
+        }
+
+        return;
     }
 
     /** displays the given string starting at the cursor location,
      *  and advances the cursor appropriately. */
-    function void printString(String s) {
+    function void printString(String arg0) {
+        var int l0, l1;
+        let l1 = String.length(arg0);
+
+        while (l0 < l1) {
+            do Output.printChar(String.charAt(arg0, l0));
+            let l0 = l0 + 1;
+        }
+        return;
     }
 
     /** Displays the given integer starting at the cursor location,
      *  and advances the cursor appropriately. */
-    function void printInt(int i) {
+    function void printInt(int arg0) {
+        do String.setInt(stat3, arg0);
+        do Output.printString(stat3);
+        return;
     }
 
     /** Advances the cursor to the beginning of the next line. */
     function void println() {
+        let stat1 = (stat1 + 352) - stat0;
+        let stat0 = 0;
+        let stat2 = true;
+ 
+        if (stat1 = 8128) {
+            let stat1 = 32;
+        } 
+        return;
     }
 
     /** Moves the cursor one column back. */
     function void backSpace() {
+        if (stat2) {
+            if (stat0 > 0) {
+                let stat0 = stat0 - 1;
+                let stat1 = stat1 - 1;
+            } else {
+                let stat0 = 31;
+
+                if (stat1 = 32) {
+                    let stat1 = 8128;
+                }
+                
+                let stat1 = stat1 - 321;
+            }
+                let stat2 = 0;
+        } else {
+            let stat2 = true;
+        }
+
+        do Output.drawChar(32);
+        return;
     }
 }
