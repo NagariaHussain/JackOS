@@ -10,6 +10,7 @@ class Keyboard {
 
     /** Initializes the keyboard. */
     function void init() {
+        return;
     } 
 
     /**
@@ -33,7 +34,8 @@ class Keyboard {
      * F1 - F12 = 141 - 152
      */
     function char keyPressed() {
-    }
+        return Memory.peek(24576);
+    }   
 
     /**								
      * Waits until a key is pressed on the keyboard and released,
@@ -41,6 +43,19 @@ class Keyboard {
      * of the pressed key.
      */
     function char readChar() {
+        var int l0, l1;
+        do Output.printChar(0);
+
+        while ((l1 = 0) | (l0 > 0)) {
+            let l0 = Keyboard.keyPressed();
+            if (l0 > 0) {
+                let l1 = l0;
+            }
+        }
+
+        do Output.printChar(String.backSpace());
+        do Output.printChar(l1);
+        return l1;
     }
 
     /**								
@@ -48,7 +63,28 @@ class Keyboard {
      * text until a newline character is detected, echoes the text to the screen,
      * and returns its value. Also handles user backspaces.
      */
-    function String readLine(String message) {
+    function String readLine(String arg0) {
+        var int l0, l1, l2, l3, l4;
+
+        let l3 = String.new(80);
+
+        do Output.printString(arg0);
+
+        let l1 = String.newLine();
+        let l2 = String.backSpace();
+
+        while (~l4) {
+            let l0 = Keyboard.readChar();
+            let l4 = (l0 = l1);
+            if (~l4) {
+                if (l0 = l2) {
+                    do String.eraseLastChar(l3);
+                } else {
+                    let l3 = String.appendChar(l3, l0);
+                }
+            } 
+        }
+        return l3;
     }   
 
     /**								
@@ -57,6 +93,14 @@ class Keyboard {
      * and returns its integer value (until the first non-digit character in the
      * entered text is detected). Also handles user backspaces. 
      */
-    function int readInt(String message) {
+    function int readInt(String arg0) {
+        var int l0, l1;
+
+        let l0 = Keyboard.readLine(arg0);
+
+        let l1 = String.intValue(l0);
+
+        do String.dispose(l0);
+        return l1;
     }
 }
