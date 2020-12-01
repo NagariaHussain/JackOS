@@ -41,7 +41,7 @@ class Math {
      *  the Jack expressions x*y and multiply(x,y) return the same value.
      */
     function int multiply(int arg0, int arg1) {
-        var int l0, l1, l2, l3, l4;
+        let l0, l1, l2, l3, l4;
 
         let l4 = ((arg0 < 0) & (arg1 > 0)) | ((arg0 > 0) & (arg1 < 0));
 
@@ -110,7 +110,7 @@ class Math {
         var int l0, l1, l2, l3;
 
         if (arg0 < 0) {
-            do Sys.error(4);
+            Sys.error(4);
         }
 
         let l0 = 7;
